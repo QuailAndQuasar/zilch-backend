@@ -1,8 +1,10 @@
 import pytest
 from fastapi.testclient import TestClient
-from main import app
+
+from zilch_dice_game import app
 
 client = TestClient(app)
+
 
 def test_create_game():
     response = client.post('/game/new')
