@@ -8,7 +8,8 @@ setup(
         'fastapi',
         'uvicorn',
         'pytest',
-        'httpx'
+        'httpx',
+        'numpy'
     ],
     entry_points={
         'console_scripts': [

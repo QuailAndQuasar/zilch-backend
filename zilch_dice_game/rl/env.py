@@ -3,6 +3,7 @@ import numpy as np
 from ..models import GameState, PlayerState
 from ..main import app  # We'll use the FastAPI app for game logic
 from fastapi.testclient import TestClient
+from ..utils.state_utils import encode_state, ActionSpace
 
 class ZilchEnv:
     """
@@ -12,6 +13,7 @@ class ZilchEnv:
     
     def __init__(self):
         self.client = TestClient(app)
+        self.action_space = ActionSpace()
         self.reset()
         
     def reset(self) -> np.ndarray:
@@ -47,19 +49,17 @@ class ZilchEnv:
     
     def _get_observation(self) -> np.ndarray:
         """Convert the game state to a numerical observation."""
-        obs = [
-            *self.game_state.dice,
-            self.game_state.turn_score,
-            self.game_state.players[0].total_score,
-            self.game_state.players[1].total_score,
-            self.game_state.current_player
-        ]
-        return np.array(obs, dtype=np.float32)
+        return encode_state(
+            dice=self.game_state.dice,
+            turn_score=self.game_state.turn_score,
+            p0_score=self.game_state.players[0].total_score,
+            p1_score=self.game_state.players[1].total_score,
+            current_player=self.game_state.current_player,
+        )
     
     def _decode_action(self, action_idx: int) -> List[int]:
-        """Convert an action index to dice indices to keep."""
-        # Placeholder - will be implemented in state_utils
-        return [0] if action_idx == 0 else []
+        """Convert an action index to dice indices to keep using ActionSpace."""
+        return self.action_space.index_to_action(action_idx)
     
     def render(self, mode: str = 'human') -> None:
         """Render the current game state."""
